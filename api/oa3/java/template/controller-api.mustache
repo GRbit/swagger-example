@@ -5,12 +5,12 @@ package {{packageName}}
 import (
 	"net/http"
 
+    . "github.com/grbit/swagger-example/pkg/java/models"
+    service "github.com/grbit/swagger-example/internal/{{packageName}}/handlers"
+
     "github.com/goccy/go-json"
 	"github.com/gorilla/mux"
 	"golang.org/x/xerrors"
-
-	. "github.com/grbit/swagger-example/pkg/java/models"
-	service "github.com/grbit/swagger-example/internal/service/{{packageName}}"
 ){{#operation}}
 
 func {{nickname}}(w http.ResponseWriter, r *http.Request) {

@@ -27,6 +27,10 @@ printf "\n"
 printf "Changing main package path fix\n"
 sed -i 's#sw "./go"#sw "github.com/grbit/swagger-example/internal/java"#g' output/main.go
 
+printf "\n"
+printf "Changing models package name \n"
+sed -i 's#package java#package models#g' output/go/models/*
+
 printf "\n\n--- copy generated files ---\n\n"
 
 mkdir -p ../../../internal/api
