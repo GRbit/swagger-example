@@ -1,0 +1,77 @@
+{{>partial_header}}
+package {{packageName}}
+
+import (
+	"net/http"
+	"strings"
+
+	"github.com/grbit/swagger-example/internal/api"
+
+	"github.com/gorilla/mux"
+)
+
+type Route struct {
+	Name        string
+	Method      string
+	Pattern     string
+	HandlerFunc http.HandlerFunc
+}
+
+type Routes []Route
+
+func NewRouter() *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	for _, route := range routes {
+		var handler http.Handler
+		handler = route.HandlerFunc
+		handler = Logger(handler, route.Name)
+
+		router.
+			Methods(route.Method).
+			Path(route.Pattern).
+			Name(route.Name).
+			Handler(handler)
+	}
+
+	return router
+}
+
+func Health(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("I am ok"))
+	w.WriteHeader(http.StatusOK)
+}
+
+func Swagger(w http.ResponseWriter, r *http.Request) {
+	f, err := api.SwaggerSpec()
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Write(f)
+	w.WriteHeader(http.StatusOK)
+}
+
+var routes = Routes{
+	Route{
+		"Health",
+		"GET",
+		"{{{basePathWithoutHost}}}/health",
+		Health,
+	},
+
+	Route{
+		"Swagger",
+		"GET",
+		"{{{basePathWithoutHost}}}/swagger",
+		Swagger,
+	},{{#apiInfo}}{{#apis}}{{#operations}}{{#operation}}
+
+	Route{
+		"{{operationId}}",
+		strings.ToUpper("{{httpMethod}}"),
+		"{{{basePathWithoutHost}}}{{{path}}}",
+		{{operationId}},
+	},{{/operation}}{{/operations}}{{/apis}}{{/apiInfo}}
+}

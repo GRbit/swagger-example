@@ -1,0 +1,231 @@
+openapi: 3.0.1
+info:
+  title: swagger example API
+  description: API to demo swagger
+  version: 1.0.0
+servers:
+  - url: https://company.app/api/v1
+    description: "[PRODUCTION server]"
+  - url: https://company.site.app/api/v1
+    description: "[SANDBOX server]"
+paths:
+  /property:
+    get:
+      summary: Retrieves properties information
+      operationId: getPropertiesInfo
+      responses:
+        "200":
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertiesInfoResponse'
+        '400':
+          description: Bad Request!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '404':
+          description: Resource does not exist
+        '500':
+          description: Unknown server exception!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '501':
+          description: Not implemented!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        default:
+          description: Unexpected Error
+
+  /property/{propertyId}:
+    get:
+      summary: Retrieves property information by ID
+      operationId: getPropertyInfoById
+      parameters:
+        - name: propertyId
+          in: path
+          description: The code of a property to retrieve existing channel information from
+          example: 123456
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInfoResponse'
+        '400':
+          description: Bad Request!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '404':
+          description: Resource does not exist
+        '500':
+          description: Unknown server exception!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '501':
+          description: Not implemented!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        default:
+          description: Unexpected Error
+    post:
+      summary: Set/Update property information by ID
+      operationId: createUpdatePropertyInfoById
+      parameters:
+        - name: propertyId
+          in: path
+          description: The code of a property to set or update channel information for
+          example: 123456
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        description: Request Sample and Schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyInfoData'
+        required: true
+      responses:
+        "200":
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyInfoResponse'
+        '400':
+          description: Bad Request!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '404':
+          description: Resource does not exist.
+        '500':
+          description: Unknown server exception!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        '501':
+          description: Not implemented!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorResponse'
+        default:
+          description: Unexpected Error
+
+components:
+  schemas:
+    GenericErrorResponse:
+      required:
+        - Code
+        - Message
+        - ErrorCode
+        - RequestId
+      type: object
+      properties:
+        Code:
+          type: string
+          example: ce8aeb13-d783-4f37-8351-28856792ff2d
+        ErrorCode:
+          type: string
+          example: NEXT-ERROR-981
+        Message:
+          type: string
+          example: Some info about the error
+        RequestId:
+          type: string
+          example: d6c84f022bc94ba08558af7873c3f5a1
+    PropertiesInfoResponse:
+      required:
+        - requestId
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyInfoData'
+        requestId:
+          type: string
+          example: d6c84f022bc94ba08558af7873c3f5a1
+    PropertyInfoResponse:
+      required:
+        - requestId
+      properties:
+        data:
+          $ref: '#/components/schemas/PropertyInfoData'
+        requestId:
+          type: string
+          example: d6c84f022bc94ba08558af7873c3f5a1
+    PropertyInfoData:
+      type: object
+      properties:
+        propertyStatus:
+          type: string
+          example: active
+          description: Field that indicates the status of a property on the channel. Accepted values are "active" for a property that is opened and bookable, "inactive" for a property that is no longer open and bookable, "inactive_checks" when a property is currently closed but will be opened after optional checks are done, "inactive_temporary" when a property was opened but it is now closed for a short period of time while resolving an issue, "inactive_duplicate" when a property already exists on the channel with a different property id or provider.
+          enum:
+            - active
+            - inactive
+            - inactive-checks
+            - inactive-temporary
+            - inactive-duplicate
+        propertyStatusNote:
+          type: string
+          example: This property is missing high-res photos.
+          description: This field can be used to provide more information as to why a property has a specific status on the channel.
+        propertyUrl:
+          type: string
+          example: https://www.channel.com/amazing-property-123
+          description: This field can be used to provide the property direct url on the channel.
+        propertyRating:
+          type: number
+          example: 5
+          description: This field can be used to provide a property score or rating on the channel. It is used together with the propertyRatingScale to indicate the score and scale. Example 4 out of 5 where 4 is the rating and 5 is the scale. This value cannot be bigger than the propertyRatingScale.
+        ratingScale:
+          type: integer
+          description: This field can be used to indicate the scale used for the property rating. It is required if channelPropertyRating field has a value.
+          example: 10
+
+  securitySchemes:
+    openIdProd:
+      description: Prod auth
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /auth/realms/api/protocol/openid-connect/token
+          refreshUrl: /auth/realms/api/protocol/openid-connect/token
+          scopes: {}
+    openIdSandbox:
+      description: Sandbox auth
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: /auth/realms/sandbox-api/protocol/openid-connect/token
+          refreshUrl: /auth/realms/sandbox-api/protocol/openid-connect/token
+          scopes: {}
+
+security:
+  - openIdProd: []
+  - openIdSandbox: []

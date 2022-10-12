@@ -1,0 +1,383 @@
+swagger: "2.0"
+info:
+  title: stats
+  description: "Some description of your amazing service"
+  version: 1.9.9
+host: stats.api.ru
+basePath: /accounts
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+security:
+  - ApiKeyAuth: []
+paths:
+  /:
+    post:
+      operationId: addAccUpdater
+      description: "Starts loading account ad and campaign statistic or raise account loading task in line \n
+        Response for new account is 201 CREATED \n
+        Response for raising in line is 200 OK"
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/request_id'
+        - $ref: '#/parameters/account_id_query'
+        - $ref: '#/parameters/user_id'
+        - $ref: '#/parameters/client_id'
+        - $ref: '#/parameters/force'
+      responses:
+        200:
+          $ref: '#/responses/OK'
+        201:
+          $ref: '#/responses/Created'
+        400:
+          $ref: '#/responses/BadRequest'
+        500:
+          $ref: '#/responses/InternalError'
+  /{account_id}:
+    delete:
+      operationId: delAccUpdater
+      description: "Delete account from loading queue and stop regularly updates.\n
+      Note: in --loader-acc-list-upd-timeout (default 600s) account list will be updated from
+      cabinets service, if account presented in service, new update will be started."
+      parameters:
+        - $ref: '#/parameters/request_id'
+        - $ref: '#/parameters/account_id'
+        - $ref: '#/parameters/user_id'
+        - $ref: '#/parameters/client_id'
+      responses:
+        200:
+          $ref: '#/responses/OK'
+        400:
+          $ref: '#/responses/BadRequest'
+        500:
+          $ref: '#/responses/InternalError'
+  /{account_id}/campaigns:
+    get:
+      operationId: getCampaignsStats
+      description: Gives array of stats for set time period. If updatedSince set, then reutrns only stats updated after set time
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/request_id'
+        - $ref: '#/parameters/account_id'
+        - $ref: '#/parameters/client_id'
+        - $ref: '#/parameters/user_id'
+        - $ref: '#/parameters/campaign_ids'
+        - $ref: '#/parameters/updated_since'
+        - $ref: '#/parameters/date_from'
+        - $ref: '#/parameters/date_to'
+        - $ref: '#/parameters/fields'
+      responses:
+        200:
+          $ref: '#/responses/Campaigns'
+        400:
+          $ref: '#/responses/BadRequest'
+        401:
+          $ref: '#/responses/Unauthorized'
+        500:
+          $ref: '#/responses/InternalError'
+  /{account_id}/ads:
+    get:
+      operationId: getAdsStats
+      description: Gives array of stats for set time period. If updatedSince set, then reutrns only stats updated after set time
+      produces:
+        - application/json
+      parameters:
+        - $ref: '#/parameters/request_id'
+        - $ref: '#/parameters/account_id'
+        - $ref: '#/parameters/client_id'
+        - $ref: '#/parameters/user_id'
+        - $ref: '#/parameters/ad_ids'
+        - $ref: '#/parameters/updated_since'
+        - $ref: '#/parameters/date_from'
+        - $ref: '#/parameters/date_to'
+        - $ref: '#/parameters/fields'
+      responses:
+        200:
+          $ref: '#/responses/Ads'
+        400:
+          $ref: '#/responses/BadRequest'
+        401:
+          $ref: '#/responses/Unauthorized'
+        500:
+          $ref: '#/responses/InternalError'
+
+
+
+definitions:
+  principal:
+    type: object
+    properties:
+      account_id:
+        description: account id
+        type: integer
+        format: int64
+      token:
+        description: system token
+        type: string
+  ok:
+    type: object
+    properties:
+      result:
+        type: string
+        default: OK
+  error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int64
+      details:
+        type: object
+      message:
+        type: string
+  errorResponse:
+    type: object
+    properties:
+      error:
+        $ref: '#/definitions/error'
+  campaign_stats_page:
+    type: object
+    required:
+      - items
+      - total
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/campaign_stats'
+      total:
+        $ref: '#/definitions/total'
+      next:
+        $ref: '#/definitions/next'
+  campaign_stats:
+    type: object
+    additionalProperties: true
+    required:
+      - campaign_id
+      - day
+    properties:
+      campaign_id:
+        $ref: '#/definitions/id'
+      day:
+        $ref: '#/definitions/day'
+  ad_stats_page:
+    type: object
+    required:
+      - items
+      - total
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ad_stats'
+      total:
+        $ref: '#/definitions/total'
+      next:
+        $ref: '#/definitions/next'
+  ad_stats:
+    type: object
+    additionalProperties: true
+    required:
+      - ad_id
+      - day
+    properties:
+      ad_id:
+        $ref: '#/definitions/id'
+      day:
+        $ref: '#/definitions/day'
+  campaign_posts_page:
+    type: object
+    required:
+      - items
+      - total
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/campaign_posts'
+      total:
+        $ref: '#/definitions/total'
+      next:
+        $ref: '#/definitions/next'
+  campaign_posts:
+    type: object
+    additionalProperties: true
+    required:
+      - campaign_id
+      - day
+    properties:
+      campaign_id:
+        $ref: '#/definitions/id'
+      day:
+        $ref: '#/definitions/day_date'
+  ad_posts_page:
+    type: object
+    required:
+      - items
+      - total
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ad_posts'
+      total:
+        $ref: '#/definitions/total'
+      next:
+        $ref: '#/definitions/next'
+  ad_posts:
+    type: object
+    additionalProperties: true
+    required:
+      - ad_id
+      - day
+    properties:
+      ad_id:
+        $ref: '#/definitions/id'
+      day:
+        $ref: '#/definitions/day_date'
+  total:
+    type: integer
+    format: int64
+    description: Total records finded by request
+  next:
+    type: string
+    description: link to next page of results by main request
+  id:
+    description: Object ID
+    type: integer
+    format: int64
+  day:
+    description: Statistics day timestamp in unix time
+    type: integer
+    format: int64
+  day_date:
+    description: Statistics day date in YYYY-MM-DD format
+    type: string
+
+
+
+
+parameters:
+  request_id:
+    in: header
+    name: X-RequestID
+    type: string
+    minLength: 30
+    required: true
+  account_id:
+    in: path
+    name: account_id
+    type: integer
+    format: int64
+    required: true
+  account_id_query:
+    in: query
+    name: account_id
+    type: integer
+    format: int64
+    required: true
+  user_id:
+    in: query
+    name: user_id
+    type: integer
+    format: int64
+    required: true
+  client_id:
+    in: query
+    name: client_id
+    type: integer
+    format: int64
+  date_from:
+    description: If presented, return only statistics starting from presented date in Unixtime
+    in: query
+    name: date_from
+    type: integer
+    format: int64
+  date_to:
+    description: If presented, return only statistics up to presented date in Unixtime
+    in: query
+    name: date_to
+    type: integer
+    format: int64
+  updated_since:
+    description: If presented, return only statistics up to presented date in Unixtime
+    in: query
+    name: updated_since
+    type: integer
+    format: int64
+  fields:
+    description: Enumeration wanted parameters of requested object
+    in: query
+    name: fields
+    type: array
+    items:
+      type: string
+  ad_ids:
+    in: query
+    name: ad_ids
+    type: array
+    items:
+      type: integer
+  campaign_ids:
+    in: query
+    name: campaign_ids
+    type: array
+    items:
+      type: integer
+  force:
+    in: query
+    description: if set, account will be updated without cache from beginning of time
+    name: force
+    type: boolean
+
+
+
+
+responses:
+  OK:
+    description: success 200
+    schema:
+      $ref: '#/definitions/ok'
+  Created:
+    description: created 201
+    schema:
+      $ref: '#/definitions/ok'
+  BadRequest:
+    description: bad request 400
+    schema:
+      $ref: '#/definitions/errorResponse'
+  Unauthorized:
+    description: unauthorized 400
+    schema:
+      $ref: '#/definitions/errorResponse'
+  InternalError:
+    description: internal server error 500
+    schema:
+      $ref: '#/definitions/errorResponse'
+  Ads:
+    description: pages of Ad
+    schema:
+      type: object
+      properties:
+        ads:
+          $ref: '#/definitions/ad_stats_page'
+  Campaigns:
+    description: pages of Campaign
+    schema:
+      type: object
+      properties:
+        campaigns:
+          $ref: '#/definitions/campaign_stats_page'
+
+
+
+securityDefinitions:
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: X-System-Token

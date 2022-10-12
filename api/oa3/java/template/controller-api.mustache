@@ -1,0 +1,97 @@
+{{>partial_header}}
+package {{packageName}}
+
+{{#operations}}
+import (
+	"net/http"
+
+    "github.com/goccy/go-json"
+	"github.com/gorilla/mux"
+	"golang.org/x/xerrors"
+
+	. "github.com/grbit/swagger-example/pkg/java/models"
+	service "github.com/grbit/swagger-example/internal/service/{{packageName}}"
+){{#operation}}
+
+func {{nickname}}(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	{{#hasPathParams}}
+	// pathParams
+		{{#pathParams}}
+	{{paramName}} := mux.Vars(r)["{{paramName}}"]
+		{{/pathParams}}
+	{{/hasPathParams}}
+	{{#hasQueryParams}}
+	// queryParams
+		{{#queryParams}}
+    {{paramName}} := extractQueryParam(r, "{{paramName}}")
+		{{/queryParams}}
+
+	{{/hasQueryParams}}
+	{{#bodyParams}}
+		{{#allParams}}
+			{{^isFile}}
+				{{#isBodyParam}}
+	// body params
+	var body {{dataType}}
+
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(xerrors.Errorf("BadRequest: %w", err).Error()))
+
+		return
+	}
+
+	var response {{#returnContainer}}{{#isMapContainer}}Map<NYI, {{{returnType}}}>{{/isMapContainer}}{{#isListContainer}}{{{returnType}}}{{/isListContainer}}{{/returnContainer}}{{^returnContainer}}{{{returnType}}}{{/returnContainer}}
+	response, responseErr := service.Handle{{nickname}}(r, body{{#hasPathParams}}{{#pathParams}}, {{paramName}}{{/pathParams}}{{/hasPathParams}}{{#hasQueryParams}}{{#queryParams}}, {{paramName}}{{/queryParams}}{{/hasQueryParams}})
+
+	if responseErr != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	payload, _ := json.Marshal(response)
+	w.Write(payload)
+				{{/isBodyParam}}
+			{{/isFile}}
+		{{/allParams}}
+	{{/bodyParams}}
+	{{^bodyParams}}
+		{{#returnType}}
+	var response {{#returnContainer}}{{#isMapContainer}}Map<NYI, {{{returnType}}}>{{/isMapContainer}}{{#isListContainer}}{{{returnType}}}{{/isListContainer}}{{/returnContainer}}{{^returnContainer}}{{{returnType}}}{{/returnContainer}}
+	response, responseErr := service.Handle{{nickname}}(r{{#hasPathParams}}{{#pathParams}}, {{paramName}}{{/pathParams}}{{/hasPathParams}}{{#hasQueryParams}}{{#queryParams}}, {{paramName}}{{/queryParams}}{{/hasQueryParams}})
+
+	if responseErr != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+
+		return
+	}
+
+	payload, _ := json.Marshal(response)
+	w.WriteHeader(http.StatusOK)
+	w.Write(payload)
+		{{/returnType}}
+		{{^returnType}}
+	service.Handle{{nickname}}(r{{#hasPathParams}}{{#pathParams}}, {{paramName}}{{/pathParams}}{{/hasPathParams}}{{#hasQueryParams}}{{#queryParams}}, {{paramName}}{{/queryParams}}{{/hasQueryParams}})
+	w.WriteHeader(http.StatusOK)
+		{{/returnType}}
+	{{/bodyParams}}
+}{{/operation}}{{/operations}}
+
+func extractQueryParam(request *http.Request, param string) *string {
+	query := request.URL.Query()
+	value, ok := query[param]
+
+	if ok && len(value[0]) > 0 {
+		return &value[0]
+	}
+
+	return nil
+}
