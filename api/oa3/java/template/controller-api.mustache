@@ -3,6 +3,7 @@ package {{packageName}}
 
 {{#operations}}
 import (
+	"log"
 	"net/http"
 
     . "github.com/grbit/swagger-example/pkg/java/models"
@@ -49,8 +50,10 @@ func {{nickname}}(w http.ResponseWriter, r *http.Request) {
 	response, responseErr := service.Handle{{nickname}}(r, body{{#hasPathParams}}{{#pathParams}}, {{paramName}}{{/pathParams}}{{/hasPathParams}}{{#hasQueryParams}}{{#queryParams}}, {{paramName}}{{/queryParams}}{{/hasQueryParams}})
 
 	if responseErr != nil {
+	    err := xerrors.Errorf("InternalServerError: %w", responseErr)
+        log.Println(err.Error())
         w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+        w.Write([]byte(err.Error()))
 
 		return
 	}
@@ -68,8 +71,10 @@ func {{nickname}}(w http.ResponseWriter, r *http.Request) {
 	response, responseErr := service.Handle{{nickname}}(r{{#hasPathParams}}{{#pathParams}}, {{paramName}}{{/pathParams}}{{/hasPathParams}}{{#hasQueryParams}}{{#queryParams}}, {{paramName}}{{/queryParams}}{{/hasQueryParams}})
 
 	if responseErr != nil {
+	    err := xerrors.Errorf("InternalServerError: %w", responseErr)
+        log.Println("InternalServerError", err.Error())
         w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+        w.Write([]byte(err.Error()))
 
 		return
 	}

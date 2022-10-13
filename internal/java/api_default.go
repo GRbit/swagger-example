@@ -12,6 +12,7 @@
 package java
 
 import (
+	"log"
 	"net/http"
 
 	service "github.com/grbit/swagger-example/internal/java/handlers"
@@ -43,8 +44,10 @@ func CreateUpdatePropertyInfoById(w http.ResponseWriter, r *http.Request) {
 	response, responseErr := service.HandleCreateUpdatePropertyInfoById(r, body, propertyId)
 
 	if responseErr != nil {
+		err := xerrors.Errorf("InternalServerError: %w", responseErr)
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+		w.Write([]byte(err.Error()))
 
 		return
 	}
@@ -60,8 +63,10 @@ func GetPropertiesInfo(w http.ResponseWriter, r *http.Request) {
 	response, responseErr := service.HandleGetPropertiesInfo(r)
 
 	if responseErr != nil {
+		err := xerrors.Errorf("InternalServerError: %w", responseErr)
+		log.Println("InternalServerError", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+		w.Write([]byte(err.Error()))
 
 		return
 	}
@@ -79,8 +84,10 @@ func GetPropertyInfoById(w http.ResponseWriter, r *http.Request) {
 	response, responseErr := service.HandleGetPropertyInfoById(r, propertyId)
 
 	if responseErr != nil {
+		err := xerrors.Errorf("InternalServerError: %w", responseErr)
+		log.Println("InternalServerError", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(xerrors.Errorf("InternalServerError: %w", responseErr).Error()))
+		w.Write([]byte(err.Error()))
 
 		return
 	}

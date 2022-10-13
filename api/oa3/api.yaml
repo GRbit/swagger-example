@@ -8,6 +8,8 @@ servers:
     description: "[PRODUCTION server]"
   - url: https://company.site.app/api/v1
     description: "[SANDBOX server]"
+  - url: http://localhost:8080/api/v1
+    description: "[LOCAL server]"
 paths:
   /property:
     get:
