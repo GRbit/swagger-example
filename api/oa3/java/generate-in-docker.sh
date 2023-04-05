@@ -7,24 +7,25 @@ cd $DIR
 
 PATH=$PATH:$(go env GOPATH)/bin
 
-printf "\n\n"
-printf "***************************\n"
-printf "***  Generating server  ***\n"
-printf "***************************\n"
-printf "\n"
+echo
+echo "***************************"
+echo "***  Generating server  ***"
+echo "***************************"
+echo
 
 java -jar swagger-codegen-cli-3.0.34.jar generate -i api.yaml \
  --additional-properties packageName=java,packageNameUpper=Java \
  -l go-server -t ./template -o ./output/
 
-printf "\nApplying post fixes for models package name\n"
+echo
+echo "Applying post fixes for models package name"
 sed -i 's#package external#package models#g' output/go/model_*.go
 
 mkdir ./output/go/models
 mv ./output/go/model_*.go ./output/go/models
 
-printf "\n"
-printf "***************************\n"
-printf "***  Generation DONE    ***\n"
-printf "***************************\n"
-printf "\n\n"
+echo
+echo "***************************"
+echo "***  Generation DONE    ***"
+echo "***************************"
+echo

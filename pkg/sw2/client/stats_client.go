@@ -19,10 +19,10 @@ var Default = NewHTTPClient(nil)
 const (
 	// DefaultHost is the default Host
 	// found in Meta (info) section of spec file
-	DefaultHost string = "stats.api.ru"
+	DefaultHost string = "localhost:8080"
 	// DefaultBasePath is the default BasePath
 	// found in Meta (info) section of spec file
-	DefaultBasePath string = "/accounts"
+	DefaultBasePath string = "/api/v1/accounts"
 )
 
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file

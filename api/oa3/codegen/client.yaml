@@ -1,0 +1,7 @@
+package: oapi_client
+generate:
+  client: true
+output: pkg/codegen/client/client.gen.go
+additional-imports:
+  - alias: .
+    package: github.com/grbit/swagger-example/pkg/codegen/models

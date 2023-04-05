@@ -1,0 +1,9 @@
+package: oapi_server
+generate:
+  strict-server: true
+  chi-server: true
+  embedded-spec: true
+output: internal/codegen/server/server.gen.go
+additional-imports:
+  - alias: .
+    package: github.com/grbit/swagger-example/pkg/codegen/models

@@ -19,19 +19,18 @@ cp ../api.yaml .
 docker run -u $(id -u ${USER}):$(id -g ${USER}) --rm -v "`pwd`:/workspace" -w "/workspace" nextpax_dist_api_swagger ./generate-in-docker.sh
 rm api.yaml
 
-printf "\n"
-printf "Applying post fixes for omitempty value type be also reflected as golang code format\n"
+echo
+echo "Applying post fixes:"
+echo "Fixing omitempty value type..."
 sed -i -e 's/ \([a-z0-9]\+\) `json:"\(.*\),omitempty"/ *\1 `json:"\2,omitempty"/g' output/go/models/*
-
-printf "\n"
-printf "Changing main package path fix\n"
+echo "Fixing main package path..."
 sed -i 's#sw "./go"#sw "github.com/grbit/swagger-example/internal/java"#g' output/main.go
-
-printf "\n"
-printf "Changing models package name \n"
+echo "Fixing models package name..."
 sed -i 's#package java#package models#g' output/go/models/*
 
-printf "\n\n--- copy generated files ---\n\n"
+echo
+echo "--- copy generated files ---"
+echo
 
 mkdir -p ../../../internal/api
 mkdir -p ../../../internal/java
@@ -45,8 +44,8 @@ cp output/main.go ../../../cmd/java/
 
 rm -r output
 
-printf "\n\n"
-printf "***************************\n"
-printf "***         DONE        ***\n"
-printf "***************************\n"
-printf "\n\n"
+echo
+echo "***************************"
+echo "***         DONE        ***"
+echo "***************************"
+echo

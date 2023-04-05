@@ -5,8 +5,8 @@
 //	Some description of your amazing service
 //	Schemes:
 //	  http
-//	Host: stats.api.ru
-//	BasePath: /accounts
+//	Host: localhost:8080
+//	BasePath: /api/v1/accounts
 //	Version: 1.9.9
 //
 //	Consumes:

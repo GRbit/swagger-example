@@ -1,0 +1,4 @@
+package: models
+output: pkg/codegen/models/models.gen.go
+generate:
+  models: true

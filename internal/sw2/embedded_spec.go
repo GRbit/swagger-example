@@ -33,8 +33,8 @@ func init() {
     "title": "stats",
     "version": "1.9.9"
   },
-  "host": "stats.api.ru",
-  "basePath": "/accounts",
+  "host": "localhost:8080",
+  "basePath": "/api/v1/accounts",
   "paths": {
     "/": {
       "post": {
@@ -602,8 +602,8 @@ func init() {
     "title": "stats",
     "version": "1.9.9"
   },
-  "host": "stats.api.ru",
-  "basePath": "/accounts",
+  "host": "localhost:8080",
+  "basePath": "/api/v1/accounts",
   "paths": {
     "/": {
       "post": {

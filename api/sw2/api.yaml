@@ -3,8 +3,8 @@ info:
   title: stats
   description: "Some description of your amazing service"
   version: 1.9.9
-host: stats.api.ru
-basePath: /accounts
+host: localhost:8080
+basePath: /api/v1/accounts
 schemes:
   - http
 consumes:

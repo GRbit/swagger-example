@@ -41,7 +41,8 @@ func configureAPI(api *operations.StatsAPI) http.Handler {
 	// Applies when the "X-System-Token" header is set
 	if api.APIKeyAuthAuth == nil {
 		api.APIKeyAuthAuth = func(token string) (*model.Principal, error) {
-			return nil, errors.NotImplemented("api key auth (ApiKeyAuth) X-System-Token from header param [X-System-Token] has not yet been implemented")
+			// will authorize everything
+			return nil, nil
 		}
 	}
 
