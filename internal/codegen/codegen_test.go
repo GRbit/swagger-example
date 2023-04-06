@@ -17,7 +17,7 @@ import (
 
 const (
 	addr = "localhost:8080"
-	host = "http://" + addr
+	host = "http://" + addr + "/api/v1"
 )
 
 var (
