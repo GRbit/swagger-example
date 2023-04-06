@@ -39,11 +39,9 @@ func configureAPI(api *operations.StatsAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	// Applies when the "X-System-Token" header is set
-	if api.APIKeyAuthAuth == nil {
-		api.APIKeyAuthAuth = func(token string) (*model.Principal, error) {
-			// will authorize everything
-			return nil, nil
-		}
+	api.APIKeyAuthAuth = func(token string) (*model.Principal, error) {
+		// will authorize everything
+		return nil, nil
 	}
 
 	// Set your custom authorizer if needed. Default one is security.Authorized()
