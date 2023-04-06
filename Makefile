@@ -1,3 +1,6 @@
+# for swagger2 server
+export PORT?=8080
+
 fmt:
 	gofumpt -l -w -extra ./.
 	gci write -s Std -s 'Prefix(github.com/grbit/swagger-example)' -s Def .
