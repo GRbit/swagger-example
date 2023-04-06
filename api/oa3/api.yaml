@@ -182,6 +182,8 @@ components:
           example: d6c84f022bc94ba08558af7873c3f5a1
     PropertyInfoData:
       type: object
+      required:
+        - propertyUrl
       properties:
         propertyStatus:
           type: string
@@ -199,8 +201,9 @@ components:
           description: This field can be used to provide more information as to why a property has a specific status on the channel.
         propertyUrl:
           type: string
-          example: https://www.channel.com/amazing-property-123
+          example: https://www.channel.com/amazing-property-12
           description: This field can be used to provide the property direct url on the channel.
+          minLength: 10
         propertyRating:
           type: number
           example: 5

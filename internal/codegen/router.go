@@ -1,7 +1,6 @@
 package codegen
 
 import (
-	"encoding/json"
 	"net/http"
 
 	oapi_server "github.com/grbit/swagger-example/internal/codegen/server"
@@ -40,19 +39,7 @@ func NewRouter(lg zerolog.Logger) *chi.Mux {
 }
 
 func RequestErrorHandlerFunc(w http.ResponseWriter, r *http.Request, err error) {
-	x := struct {
-		Error string `json:"error"`
-	}{
-		Error: err.Error(),
-	}
-
-	bb, err := json.Marshal(x)
-	if err != nil {
-		panic(xerrors.Errorf("marshalling validation error: %w", err))
-	}
-
 	w.WriteHeader(http.StatusBadRequest)
-	w.Write(bb)
 }
 
 func ResponseErrorHandlerFunc(w http.ResponseWriter, r *http.Request, err error) {

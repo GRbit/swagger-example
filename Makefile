@@ -23,7 +23,7 @@ swagger2-generate:
 
 # https://github.com/deepmap/oapi-codegen
 codegen-generate:
-	./api/sw2/generate.sh
+	./api/oa3/codegen/generate.sh
 	make fmt
 
 start-swagger2:

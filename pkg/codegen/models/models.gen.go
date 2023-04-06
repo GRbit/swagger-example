@@ -43,7 +43,7 @@ type PropertyInfoData struct {
 	PropertyStatusNote *string `json:"propertyStatusNote,omitempty"`
 
 	// PropertyUrl This field can be used to provide the property direct url on the channel.
-	PropertyUrl *string `json:"propertyUrl,omitempty"`
+	PropertyUrl string `json:"propertyUrl"`
 
 	// RatingScale This field can be used to indicate the scale used for the property rating. It is required if channelPropertyRating field has a value.
 	RatingScale *int `json:"ratingScale,omitempty"`

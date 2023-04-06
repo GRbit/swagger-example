@@ -61,7 +61,7 @@ func BenchmarkCodegenCreateUpdatePropertyInfoById(b *testing.B) {
 	body := models.CreateUpdatePropertyInfoByIdJSONRequestBody{
 		PropertyRating: lo.ToPtr(float32(5)),
 		PropertyStatus: lo.ToPtr(models.PropertyInfoDataPropertyStatus("active")),
-		PropertyUrl:    lo.ToPtr("https://example.com"),
+		PropertyUrl:    "https://example.com",
 		RatingScale:    lo.ToPtr(10),
 	}
 
