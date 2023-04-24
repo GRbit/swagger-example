@@ -13,7 +13,7 @@ import (
 func main() {
 	configureLogging()
 
-	if err := codegen.StartServer("localhost:8080", log.Logger); err != nil {
+	if err := codegen.StartServer("localhost:8080", log.Logger, codegen.NewChiHandler(log.Logger)); err != nil {
 		panic(err)
 	}
 }

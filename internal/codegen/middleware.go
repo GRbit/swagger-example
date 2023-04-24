@@ -6,6 +6,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"github.com/segmentio/ksuid"
 )
@@ -86,4 +87,68 @@ func RecoverMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func ContextPrepareMiddlewareEcho(lg zerolog.Logger) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			remoteAddr := c.Request().Header.Get("X-Real-Ip")
+			if remoteAddr == "" {
+				remoteAddr = c.Request().Header.Get("X-Forwarded-For")
+			}
+			if remoteAddr == "" {
+				remoteAddr = c.Request().RemoteAddr
+			}
+
+			lg = lg.With().
+				Str("remoteAddress", remoteAddr).
+				Str("httpMethod", c.Request().Method).
+				Str("requestID", ksuid.New().String()).
+				Str("requestURI", c.Request().RequestURI).
+				Int64("contentLength", c.Request().ContentLength).
+				Logger()
+			c.Set("logger", lg)
+
+			return next(c)
+		}
+	}
+}
+
+func RecoverMiddlewareEcho(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		defer func() {
+			lg := c.Get("logger").(zerolog.Logger)
+
+			caughtError := recover()
+			if caughtError == nil {
+				return
+			}
+
+			err, ok := caughtError.(error)
+			if ok {
+				lg.Err(err).
+					Str("stack", string(debug.Stack())).
+					Str("detailedError", fmt.Sprintf("%+v", caughtError)).
+					Msg("Recovering from panic")
+			} else {
+				lg.Error().
+					Str("stack", string(debug.Stack())).
+					Msg("Recovering from panic")
+			}
+
+			c.JSON(http.StatusInternalServerError, map[string]any{"error": err})
+		}()
+
+		return next(c)
+	}
+}
+
+func RequestLoggingMiddlewareEcho(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		lg := c.Get("logger").(zerolog.Logger)
+		lg.Info().
+			Msg("request received")
+
+		return next(c)
+	}
 }

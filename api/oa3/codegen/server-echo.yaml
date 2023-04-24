@@ -1,0 +1,9 @@
+package: oapi_echo_server
+generate:
+  strict-server: true
+  echo-server: true
+  embedded-spec: true
+output: internal/codegen/server/echo/server.gen.go
+additional-imports:
+  - alias: .
+    package: github.com/grbit/swagger-example/pkg/codegen/models

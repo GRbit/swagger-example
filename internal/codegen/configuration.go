@@ -13,14 +13,14 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func StartServer(addr string, lg zerolog.Logger) error {
+func StartServer(addr string, lg zerolog.Logger, handler http.Handler) error {
 	srv := &http.Server{
 		Addr: addr,
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: time.Minute,
 		IdleTimeout:  5 * time.Minute,
-		Handler:      NewRouter(lg),
+		Handler:      handler,
 	}
 
 	// error channel to catch errors from the server
